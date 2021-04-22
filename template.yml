@@ -1,0 +1,38 @@
+ROSTemplateFormatVersion: '2015-09-01'
+Transform: 'Aliyun::Serverless-2018-04-03'
+Resources:
+  GreetingService:
+    Type: 'Aliyun::Serverless::Service'
+    Properties:
+      Description: This is hello world application
+    GreetingFunction:
+      Type: 'Aliyun::Serverless::Function'
+      Properties:
+        Handler: index.handler
+        Runtime: nodejs10
+        CodeUri: ./src
+      Events:
+        httpTrigger:
+          Type: HTTP
+          Properties:
+            AuthType: ANONYMOUS
+            Methods:
+              - GET
+Outputs:
+  HttpTriggerEndpoint:
+    Value:
+      'Fn::Join':
+        - ''
+        - - 'https://'
+          - Ref: ALIYUN::AccountId
+          - '.'
+          - Ref: ALIYUN::Region
+          - '.fc.aliyuncs.com/2016-08-15/proxy/'
+          - 'Fn::GetAtt':
+            - Puppeteer
+            - ServiceName
+          - '/'
+          - 'Fn::GetAtt':
+            - PuppeteerHtmlToPng
+            - FunctionName
+          - '/'
